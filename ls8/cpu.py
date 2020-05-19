@@ -83,19 +83,19 @@ class CPU:
 
         while on:
             inst = self.ram_read(self.pc)
-            alpha = self.ram_read(self.pc + 1)
-            beta = self.ram_read(self.pc + 2)
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
         
             if inst == HLT:
                 on = False
-                self.pc += 10000
+                self.pc = 0
             
             elif inst == LDI:
-                self.reg[alpha] = beta
+                self.reg[operand_a] = operand_b
                 self.pc += 3 
             
             elif inst == PRN:
-                print(self.reg[alpha])
+                print(self.reg[operand_a])
                 self.pc += 2
 
             else:

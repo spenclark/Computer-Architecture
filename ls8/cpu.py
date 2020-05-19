@@ -71,4 +71,33 @@ class CPU:
 
     def run(self):
         """Run the CPU."""
+        # declare instructions
+        # add swtich
+        # while for each inst
+
+        HLT = 0b00000001
+        LDI = 0b10000010
+        PRN = 0b01000111
+
+        on = True
+
+        while on:
+            inst = self.ram_read(self.pc)
+            alpha = self.ram_read(self.pc + 1)
+            beta = self.ram_read(self.pc + 2)
         
+            if inst == HLT:
+                on = False
+                self.pc += 10000
+            
+            elif inst == LDI:
+                self.reg[alpha] = beta
+                self.pc += 3 
+            
+            elif inst == PRN:
+                print(self.reg[alpha])
+                self.pc += 2
+
+            else:
+                print("something went wrong: try another input")
+                on = False

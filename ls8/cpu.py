@@ -6,9 +6,6 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
-POP = 0b01000110
-PUSH = 0b01000101
-SP = 0b00000111
 
 
 class CPU:
@@ -19,7 +16,7 @@ class CPU:
         self.register = [0] * 8
         self.ram = [0] * 256
         self.pc = 0
-        self.register[SP] = 0xF4
+        self.instruction = {LDI: self.runLDI, PRN: self.runPRN, MUL: self.runMUL, HLT: self.runHLT}
 
 
     def ram_read(self, loc):
@@ -34,11 +31,11 @@ class CPU:
         address = 0
 
         with open(sys.argv[1]) as file:
-            for line in file:
-                line = line.split("#")[0].strip()
-                if line == "":
+            for i in file:
+                i = i.split("#")[0].strip()
+                if i == " ":
                     continue
-                instruction = int(line, 2)
+                instruction = int(i, 2)
                 self.ram[address] = instruction
                 address += 1
 
@@ -71,25 +68,47 @@ class CPU:
         # for i in range(8):
         #     print(" %02X" % self.register[i], end='')
 
+    def runLDI(self):
+        operand_a = self.ram[self.pc + 1]
+        operand_b = self.ram[self.pc + 2]
+        self.ram_write(operand_a, operand_b)
+        self.pc += 3
+    
+    def runHLT(self):
+        self.run.on = False
+
+    def runPRN(self): 
+        location = self.ram[self.pc + 1]
+        print(self.ram_read(location))
+        self.pc += 1
+
+    def runMUL(self):
+        operand_a = self.ram[self.pc + 1]
+        operand_b = self.ram[self.pc + 2]
+        self.alu("MUL", operand_a, operand_b)
+        self.pc += 1
 
     def run(self):
         """Run the CPU."""
         on = True
+        # while on:
+        #     inst = self.ram_read(self.pc)
+        #     operand_a = self.ram_read(self.pc + 1)
+        #     operand_b = self.ram_read(self.pc + 2)
+        #     if inst == LDI:
+        #         self.ram_write(operand_a, operand_b)
+        #         self.pc += 3
+        #     elif inst == HLT:
+        #         on = False
+        #     elif inst == PRN:
+        #         print(self.ram_read(operand_a))
+        #         self.pc += 2
+        #     elif inst == MUL:
+        #         self.alu("MUL", operand_a, operand_b)
+        #         self.pc += 3
+        #     else:
+        #         print("Could not complete: try another input?")
+        #         on = False
+
         while on:
-            inst = self.ram_read(self.pc)
-            operand_a = self.ram_read(self.pc + 1)
-            operand_b = self.ram_read(self.pc + 2)
-            if inst == LDI:
-                self.ram_write(operand_a, operand_b)
-                self.pc += 3
-            elif inst == HLT:
-                on = False
-            elif inst == PRN:
-                print(self.ram_read(operand_a))
-                self.pc += 2
-            elif inst == MUL:
-                self.alu("MUL", operand_a, operand_b)
-                self.pc += 3
-            else:
-                print("Could not complete: try another input?")
-                on = False
+            self.instruction[self.ram[self.pc]]()

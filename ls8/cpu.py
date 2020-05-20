@@ -72,7 +72,7 @@ class CPU:
         HLT = 0b00000001
         LDI = 0b10000010
         PRN = 0b01000111
-
+        MUL = 0b10100010
         on = True
 
         while on:
@@ -83,7 +83,8 @@ class CPU:
             if inst == HLT:
                 on = False
                 self.pc = 0
-            
+            elif inst == MUL:
+                self.alu("MUL", operand_a, operand_b)
             elif inst == LDI:
                 self.reg[operand_a] = operand_b
                 self.pc += 3 

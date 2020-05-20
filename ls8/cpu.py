@@ -47,9 +47,9 @@ class CPU:
 
         if op == "ADD":
             self.register[reg_a] += self.register[reg_b]
+        # elif op == "SUB": etc
         elif op == "MUL":
             self.ram[reg_a] *= self.ram[reg_b]
-        # elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -59,19 +59,18 @@ class CPU:
         from run() if you need help debugging.
         """
 
-        print(f"TRACE: %02X | %02X %02X %02X |" % (
-            self.pc,
-            # self.fl,
-            # self.ie,
-            self.ram_read(self.pc),
-            self.ram_read(self.pc + 1),
-            self.ram_read(self.pc + 2)
-        ), end='')
+        # print(f"TRACE: %02X | %02X %02X %02X |" % (
+        #     self.pc,
+        #     # self.fl,
+        #     # self.ie,
+        #     self.ram_read(self.pc),
+        #     self.ram_read(self.pc + 1),
+        #     self.ram_read(self.pc + 2)
+        # ), end='')
 
-        for i in range(8):
-            print(" %02X" % self.register[i], end='')
+        # for i in range(8):
+        #     print(" %02X" % self.register[i], end='')
 
-        print()
 
     def run(self):
         """Run the CPU."""

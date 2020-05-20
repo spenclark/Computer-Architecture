@@ -20,13 +20,13 @@ class CPU:
         self.ram = [0] * 256
         self.pc = 0
         self.register[SP] = 0xF4
-        # self.running = False
 
-    def ram_read(self, MAR):
-        return self.ram[MAR]
 
-    def ram_write(self, MAR, MDR):
-        self.ram[MAR] = MDR
+    def ram_read(self, loc):
+        return self.ram[loc]
+
+    def ram_write(self, loc, value):
+        self.ram[loc] = value
 
     def load(self):
         """Load a program into memory."""

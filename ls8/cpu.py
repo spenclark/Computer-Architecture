@@ -2,24 +2,35 @@
 
 import sys
 
+HLT = 0b00000001
+LDI = 0b10000010
+PRN = 0b01000111
+MUL = 0b10100010
+POP = 0b01000110
+PUSH = 0b01000101
+SP = 0b00000111
+
+
 class CPU:
     """Main CPU class."""
 
     def __init__(self):
         """Construct a new CPU."""
-        self.pc = 0
-        self.reg = [0] * 8
+        self.register = [0] * 8
         self.ram = [0] * 256
+        self.pc = 0
+        self.register[SP] = 0xF4
+        # self.running = False
 
-    # read method
-    def ram_read(self, loc):
-        return self.ram[loc]
-    # write method
-    def ram_write(self, loc, value):
-        self.ram[loc] = value
-        
+    def ram_read(self, MAR):
+        return self.ram[MAR]
+
+    def ram_write(self, MAR, MDR):
+        self.ram[MAR] = MDR
+
     def load(self):
         """Load a program into memory."""
+
         address = 0
 
         with open(sys.argv[1]) as file:
@@ -31,15 +42,14 @@ class CPU:
                 self.ram[address] = instruction
                 address += 1
 
-
     def alu(self, op, reg_a, reg_b):
         """ALU operations."""
 
         if op == "ADD":
-            self.reg[reg_a] += self.reg[reg_b]
-        #elif op == "SUB": etc
+            self.register[reg_a] += self.register[reg_b]
         elif op == "MUL":
-            self.ram[reg_a] *= self.reg[reg_b]
+            self.ram[reg_a] *= self.ram[reg_b]
+        # elif op == "SUB": etc
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -51,48 +61,36 @@ class CPU:
 
         print(f"TRACE: %02X | %02X %02X %02X |" % (
             self.pc,
-            #self.fl,
-            #self.ie,
+            # self.fl,
+            # self.ie,
             self.ram_read(self.pc),
             self.ram_read(self.pc + 1),
             self.ram_read(self.pc + 2)
         ), end='')
 
         for i in range(8):
-            print(" %02X" % self.reg[i], end='')
+            print(" %02X" % self.register[i], end='')
 
         print()
 
     def run(self):
         """Run the CPU."""
-        # declare instructions
-        # add swtich
-        # while for each inst
-
-        HLT = 0b00000001
-        LDI = 0b10000010
-        PRN = 0b01000111
-        MUL = 0b10100010
         on = True
-
         while on:
             inst = self.ram_read(self.pc)
             operand_a = self.ram_read(self.pc + 1)
             operand_b = self.ram_read(self.pc + 2)
-        
-            if inst == HLT:
+            if inst == LDI:
+                self.ram_write(operand_a, operand_b)
+                self.pc += 3
+            elif inst == HLT:
                 on = False
-                self.pc = 0
+            elif inst == PRN:
+                print(self.ram_read(operand_a))
+                self.pc += 2
             elif inst == MUL:
                 self.alu("MUL", operand_a, operand_b)
-            elif inst == LDI:
-                self.reg[operand_a] = operand_b
-                self.pc += 3 
-            
-            elif inst == PRN:
-                print(self.reg[operand_a])
-                self.pc += 2
-
+                self.pc += 3
             else:
-                print("something went wrong: try another input")
+                print("Could not complete: try another input?")
                 on = False

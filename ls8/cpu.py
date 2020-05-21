@@ -120,8 +120,9 @@ class CPU:
             elif inst == PUSH:
                 # decrement the SP
                 self.register[self.sp] -= 1
-                # get reguster #
+                # set the value the the given pointer
                 self.ram_write(self.register[self.sp], self.register[operand_a])
+                self.pc += 2
             elif inst == POP:
                 return None
 

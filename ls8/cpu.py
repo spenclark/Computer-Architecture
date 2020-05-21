@@ -17,7 +17,7 @@ class CPU:
         self.register = [0] * 8
         self.ram = [0] * 256
         self.pc = 0
-        self.sp = 7
+        self.SP = 7
         self.instruction = {LDI: self.runLDI, PRN: self.runPRN, MUL: self.runMUL, HLT: self.runHLT}
 
     def load(self):
@@ -43,14 +43,15 @@ class CPU:
         elif op == "MUL":
             self.ram[reg_a] *= self.ram[reg_b]
         elif op == "CMP":
-            if self.register[reg_a] == self.register[reg_b]:
-                # raise E flag
-            if self.register[reg_a] != self.register[reg_b]:
-                # lower E flag
-            if self.register[reg_a] < self.register[reg_b]:
-                # raise L flag
-            if self.register[reg_a] > self.register[reg_b]:
-                # raise G flag
+            # if self.register[reg_a] == self.register[reg_b]:
+            #     # raise E flag
+            # if self.register[reg_a] != self.register[reg_b]:
+            #     # lower E flag
+            # if self.register[reg_a] < self.register[reg_b]:
+            #     # raise L flag
+            # if self.register[reg_a] > self.register[reg_b]:
+            #     # raise G flag
+            return None
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -60,17 +61,17 @@ class CPU:
         from run() if you need help debugging.
         """
 
-        # print(f"TRACE: %02X | %02X %02X %02X |" % (
-        #     self.pc,
-        #     # self.fl,
-        #     # self.ie,
-        #     self.ram_read(self.pc),
-        #     self.ram_read(self.pc + 1),
-        #     self.ram_read(self.pc + 2)
-        # ), end='')
+        print(f"TRACE: %02X | %02X %02X %02X |" % (
+            self.pc,
+            # self.fl,
+            # self.ie,
+            self.ram_read(self.pc),
+            self.ram_read(self.pc + 1),
+            self.ram_read(self.pc + 2)
+        ), end='')
 
-        # for i in range(8):
-        #     print(" %02X" % self.register[i], end='')
+        for i in range(8):
+            print(" %02X" % self.register[i], end='')
 
     def runLDI(self):
         operand_a = self.ram[self.pc + 1]
@@ -117,15 +118,43 @@ class CPU:
             elif inst == MUL:
                 self.alu("MUL", operand_a, operand_b)
                 self.pc += 3
+            # elif inst == PUSH:
+            #     # decrement the Sp
+            #     self.register[self.Sp] -= 1
+            #     # set the value the the given pointer
+            #     self.ram_write(self.register[self.Sp], self.register[operand_a])
+            #     self.pc += 2
+            # elif inst == POP:
+            #     # we need the address for where to store the value in register
+            #     # Copy the value from the address pointed to by `Sp` to the given register.
+            #     # last_val = last value in stack
+            #     last_val = self.ram_read(self.register[self.Sp])
+            #     # self.ram_write(operand_a, last_val)
+            #     self.register[operand_a] = last_val
+            #     # put that in the register at operan_a
+            #     # Increment Sp
+            #     self.register[self.Sp] += 1
+            #     self.pc += 2
             elif inst == PUSH:
-                # decrement the SP
-                self.register[self.sp] -= 1
-                # set the value the the given pointer
-                self.ram_write(self.register[self.sp], self.register[operand_a])
+                # Decrement the 'SP'
+                self.register[self.SP] -= 1
+                value = self.register[operand_a]
+                # Copy the value in the given register to the address pointed to by SP
+                self.ram_write(self.register[self.SP], value)
                 self.pc += 2
-            elif inst == POP:
-                return None
 
+            elif inst == POP:
+                # we need the address for where to store the value in register
+
+                # Copy the value from the address pointed to by `SP` to the given register.
+                # last_val = last value in stack
+                last_val = self.ram_read(self.register[self.SP])
+                # self.ram_write(operand_a, last_val)
+                self.register[operand_a] = last_val
+                # put that in the register at operan_a
+                # Increment SP
+                self.register[self.SP] += 1
+                self.pc += 2
             else:
                 print("Could not complete: try another input")
                 on = False

@@ -107,6 +107,11 @@ class CPU:
             elif inst == MUL:
                 self.alu("MUL", operand_a, operand_b)
                 self.pc += 3
+            elif inst == PUSH:
+                return None
+            elif inst == POP:
+                return None
+                
             else:
                 print("Could not complete: try another input?")
                 on = False

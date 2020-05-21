@@ -6,7 +6,8 @@ HLT = 0b00000001
 LDI = 0b10000010
 PRN = 0b01000111
 MUL = 0b10100010
-
+POP = 0b01000110
+PUSH = 0b01000101
 
 class CPU:
     """Main CPU class."""
@@ -91,24 +92,21 @@ class CPU:
     def run(self):
         """Run the CPU."""
         on = True
-        # while on:
-        #     inst = self.ram_read(self.pc)
-        #     operand_a = self.ram_read(self.pc + 1)
-        #     operand_b = self.ram_read(self.pc + 2)
-        #     if inst == LDI:
-        #         self.ram_write(operand_a, operand_b)
-        #         self.pc += 3
-        #     elif inst == HLT:
-        #         on = False
-        #     elif inst == PRN:
-        #         print(self.ram_read(operand_a))
-        #         self.pc += 2
-        #     elif inst == MUL:
-        #         self.alu("MUL", operand_a, operand_b)
-        #         self.pc += 3
-        #     else:
-        #         print("Could not complete: try another input?")
-        #         on = False
-
         while on:
-            self.instruction[self.ram[self.pc]]()
+            inst = self.ram_read(self.pc)
+            operand_a = self.ram_read(self.pc + 1)
+            operand_b = self.ram_read(self.pc + 2)
+            if inst == LDI:
+                self.ram_write(operand_a, operand_b)
+                self.pc += 3
+            elif inst == HLT:
+                on = False
+            elif inst == PRN:
+                print(self.ram_read(operand_a))
+                self.pc += 2
+            elif inst == MUL:
+                self.alu("MUL", operand_a, operand_b)
+                self.pc += 3
+            else:
+                print("Could not complete: try another input?")
+                on = False

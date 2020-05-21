@@ -42,6 +42,15 @@ class CPU:
         # elif op == "SUB": etc
         elif op == "MUL":
             self.ram[reg_a] *= self.ram[reg_b]
+        elif op == "CMP":
+            if self.register[reg_a] == self.register[reg_b]:
+                # raise E flag
+            if self.register[reg_a] != self.register[reg_b]:
+                # lower E flag
+            if self.register[reg_a] < self.register[reg_b]:
+                # raise L flag
+            if self.register[reg_a] > self.register[reg_b]:
+                # raise G flag
         else:
             raise Exception("Unsupported ALU operation")
 
@@ -112,8 +121,7 @@ class CPU:
                 # decrement the SP
                 self.register[self.sp] -= 1
                 # get reguster #
-                value = self.register[operand_a]
-                self.ram_write(self)
+                self.ram_write(self.register[self.sp], self.register[operand_a])
             elif inst == POP:
                 return None
 

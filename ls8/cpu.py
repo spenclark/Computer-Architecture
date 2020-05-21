@@ -17,14 +17,8 @@ class CPU:
         self.register = [0] * 8
         self.ram = [0] * 256
         self.pc = 0
+        self.sp = 7
         self.instruction = {LDI: self.runLDI, PRN: self.runPRN, MUL: self.runMUL, HLT: self.runHLT}
-
-
-    def ram_read(self, loc):
-        return self.ram[loc]
-
-    def ram_write(self, loc, value):
-        self.ram[loc] = value
 
     def load(self):
         """Load a program into memory."""
@@ -89,6 +83,13 @@ class CPU:
         self.alu("MUL", operand_a, operand_b)
         self.pc += 1
 
+    def ram_read(self, loc):
+        return self.ram[loc]
+
+    def ram_write(self, loc, value):
+        self.ram[loc] = value
+
+
     def run(self):
         """Run the CPU."""
         on = True
@@ -108,10 +109,14 @@ class CPU:
                 self.alu("MUL", operand_a, operand_b)
                 self.pc += 3
             elif inst == PUSH:
-                return None
+                # decrement the SP
+                self.register[self.sp] -= 1
+                # get reguster #
+                value = self.register[operand_a]
+                self.ram_write(self)
             elif inst == POP:
                 return None
-                
+
             else:
-                print("Could not complete: try another input?")
+                print("Could not complete: try another input")
                 on = False
